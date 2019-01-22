@@ -7,7 +7,7 @@ function display(a, b) {
     const common = findLongestCommonSubstring(a, b);
 
     const processedA = process(a, common);
-    const domNodesA = makeDomNodes(processedA, "removed"); 
+    const domNodesA = makeDomNodes(processedA, "removed");
     const pA = document.createElement("p");
     domNodesA.forEach(node => pA.appendChild(node));
     container.appendChild(pA);
@@ -33,24 +33,19 @@ function helper(arr1, arr2, i1, i2) {
     if (arr1[i1] === arr2[i2]) {
         return [arr1[i1], ...helper(arr1, arr2, i1 + 1, i2 + 1)];
     }
-    
+
     const result1 = helper(arr1, arr2, i1 + 1, i2);
     const result2 = helper(arr1, arr2, i1, i2 + 1);
     return result1.length > result2.length ? result1 : result2;
 }
 
-// how might one then take this result and display it?
-// could iterate through the string and the common substring. 
-// we can be in one of two states: original and modified
-// we keep a buffer of all the chars since the last state change
-// when the state changes (either we find a char that is not in the common subsequence
-// or we find a char that is), we put the buffer in a more permanent place
-// and start collecting chars in a more permanent way. 
+// This `process` function has a terrible name, but its goal is to take the string and the
+// longest common substring, and break the string apart into parts that are in the common
+// substring and parts that aren't.
 //
-// [ { content: "I like ", type: "same"}, {content: "cats", type: "different"}  ]
-//
-//and then render that depending on whether it's the original or the modified content
-
+// If the original string is "I like cats" and the common substring is "I like s" (i.e.
+// "cats" has been changed to another animal) the output will look like this:
+// [ { content: "I like ", type: "same"}, {content: "cat", type: "different"}, {content: "s", type: "same"}  ]
 function process(str, common) {
     const output = [];
     let buffer = [];
