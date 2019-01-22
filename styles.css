@@ -1,0 +1,14 @@
+body {
+    font-family: sans-serif;
+}
+
+.removed {
+    color: red;
+    font-weight: bold;
+    text-decoration: line-through;
+}
+
+.added {
+    color: green;
+    font-weight: bold;
+}

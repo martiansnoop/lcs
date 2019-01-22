@@ -1,4 +1,25 @@
 
+display("I like cats", "I like dogs");
+
+function display(a, b) {
+    const container = document.querySelector("#container");
+
+    const common = findLongestCommonSubstring(a, b);
+
+    const processedA = process(a, common);
+    const domNodesA = makeDomNodes(processedA, "removed"); 
+    const pA = document.createElement("p");
+    domNodesA.forEach(node => pA.appendChild(node));
+    container.appendChild(pA);
+
+    const processedB = process(b, common);
+    const domNodesB = makeDomNodes(processedB, "added");
+    const pB = document.createElement("p");
+    domNodesB.forEach(node => pB.appendChild(node));
+    container.appendChild(pB);
+}
+
+
 function findLongestCommonSubstring(str1, str2) {
     const memo = [[]]; // todo memoize this code so we stop repeating work
     const longestCommonArray = helper(str1.split(""), str2.split(""), 0, 0);
@@ -17,13 +38,6 @@ function helper(arr1, arr2, i1, i2) {
     const result2 = helper(arr1, arr2, i1, i2 + 1);
     return result1.length > result2.length ? result1 : result2;
 }
-
-const a = "I like cats a lot";
-const b = "I like dogs a lot";
-const common = findLongestCommonSubstring(a, b);
-console.log(common)
-const processed = process(a, common);
-console.log(processed);
 
 // how might one then take this result and display it?
 // could iterate through the string and the common substring. 
@@ -79,4 +93,29 @@ function process(str, common) {
     }
     return output;
 }
+
+function makeDomNodes(processed, accentClass) {
+    return processed
+        .map(part => {
+            if (part.type === "same") {
+                return document.createTextNode(part.content);
+            } else {
+                const newNode = document.createElement("span");
+                newNode.classList.add(accentClass);
+                newNode.textContent = part.content;
+                return newNode;
+            }
+        });
+}
+
+
+
+
+
+
+
+
+
+
+
 
