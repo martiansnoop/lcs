@@ -1,10 +1,16 @@
 
+display("abcdefghi", "abcdxfghi");
 display("I like cats", "I like dogs");
+display("I like cats", "I like bats");
+display("I like cats", "I like dinosaurs");
+display("<a href='#' onclick='alert(1)'>click me!</a>", "nice try");
+display("スポーツは大好き", "スポーツが大好き");
 
 function display(a, b) {
     const container = document.querySelector("#container");
 
     const common = findLongestCommonSubstring(a, b);
+    console.log(a, b, common);
 
     const processedA = process(a, common);
     const domNodesA = makeDomNodes(processedA, "removed");
@@ -17,26 +23,46 @@ function display(a, b) {
     const pB = document.createElement("p");
     domNodesB.forEach(node => pB.appendChild(node));
     container.appendChild(pB);
+
+    container.appendChild(document.createTextNode("--------"))
 }
 
 
 function findLongestCommonSubstring(str1, str2) {
-    const memo = [[]]; // todo memoize this code so we stop repeating work
-    const longestCommonArray = helper(str1.split(""), str2.split(""), 0, 0);
+    const memo = initMemo(str1, str2);
+    const longestCommonArray = helper(str1.split(""), str2.split(""), 0, 0, memo);
     return longestCommonArray.join("");
 }
 
-function helper(arr1, arr2, i1, i2) {
+function helper(arr1, arr2, i1, i2, memo) {
     if (arr1.length === i1 || arr2.length === i2) {
         return [];
     }
+    if (memo[i1][i2] !== undefined) {
+        return memo[i1][i2];
+    }
     if (arr1[i1] === arr2[i2]) {
-        return [arr1[i1], ...helper(arr1, arr2, i1 + 1, i2 + 1)];
+        const result =[arr1[i1], ...helper(arr1, arr2, i1 + 1, i2 + 1, memo)];
+        memo[i1][i2] = result;
+        return result;
     }
 
-    const result1 = helper(arr1, arr2, i1 + 1, i2);
-    const result2 = helper(arr1, arr2, i1, i2 + 1);
-    return result1.length > result2.length ? result1 : result2;
+    const result1 = helper(arr1, arr2, i1 + 1, i2, memo);
+    const result2 = helper(arr1, arr2, i1, i2 + 1, memo);
+
+    const result = result1.length > result2.length ? result1 : result2;
+    memo[i1][i2] = result;
+    return result;
+}
+
+// I'm too lazy to search for the ninja one-liner that doubtlessly exists for this:
+function initMemo(str1, str2) {
+    const out = [];
+    for (let i = 0; i < str1.length; i++) {
+        // this array is going to be filled in out of order
+        out[i] = [];
+    }
+    return out;
 }
 
 // This `process` function has a terrible name, but its goal is to take the string and the
